@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userServiceDaoImpl">
+
+    <resultMap type="com.java110.entity.user.Cust" id="custMap">
+        <id column="custId" jdbcType="VARCHAR" property="custId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="cellphone" jdbcType="VARCHAR" property="cellphone"/>
+        <result column="realName" jdbcType="VARCHAR" property="realName"/>
+        <result column="sex" jdbcType="VARCHAR" property="sex"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="lanId" jdbcType="VARCHAR" property="lanId"/>
+        <result column="custAdress" jdbcType="VARCHAR" property="custAdress"/>
+        <result column="custType" jdbcType="VARCHAR" property="custType"/>
+        <result column="openId" jdbcType="VARCHAR" property="openId"/>
+        <!-- 一对多关系 -->
+        <!-- <collection property="stus" resultMap="Student.StudentResult"></collection>  -->
+        <collection property="custAttrs" javaType="com.java110.entity.user.CustAttr">
+            <id property="custId" column="custId"/>
+            <result property="attrCd" column="attrCd"/>
+            <result property="value" column="value"/>
+        </collection>
+    </resultMap>
+
+    <!--根据用户Id查询用户角色
+    <select id="findRolesByUserId" resultType="SysRole">
+        SELECT
+        r.*
+        FROM
+        t_role r,
+        t_user_role ur
+        WHERE ur.uid = #{userId}
+        AND ur.roleId = r.roleId
+        AND ur.status_cd = '1'
+    </select>
+-->
+    <!--保存数据至过程表 bo_cust 中 -->
+    <insert id="saveDataToBoCust" parameterType="com.java110.entity.user.BoCust">
+        <![CDATA[
+
+
+                            insert into bo_cust(boId,custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,state)
+                            values(#{boId},#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{state})
+
+
+        ]]>
+    </insert>
+    <!-- 保存数据至过程表bo_cust_attr 中-->
+    <insert id="saveDataToBoCustAttr" parameterType="com.java110.entity.user.BoCustAttr">
+        <![CDATA[
+
+
+                            insert into bo_cust_attr(boId,custId,attrCd,value,state)
+                            values(#{boId},#{custId},#{attrCd},#{value},#{state})
+
+
+        ]]>
+    </insert>
+    <!-- 保存 实例客户信息 cust -->
+    <insert id="saveDataToCust" parameterType="com.java110.entity.user.Cust">
+        <![CDATA[
+
+
+                            insert into cust(custId,name,email,cellphone,realName,sex,password,lanId,custAdress,custType,openId,status_cd)
+                            values(#{custId},#{name},#{email},#{cellphone},#{realName},#{sex},#{password},#{lanId},#{custAdress},#{custType},#{openId},#{status_cd})
+
+
+        ]]>
+    </insert>
+    <!-- 删除实例客户信息 cust -->
+    <insert id="deleteDataToCust" parameterType="com.java110.entity.user.Cust">
+        <![CDATA[
+
+
+                           delete * from cust c where c.custId = #{custId}
+
+
+        ]]>
+    </insert>
+
+    <!-- 保存 实例客户属性信息 cust_attr -->
+    <insert id="saveDataToCustAttr" parameterType="com.java110.entity.user.CustAttr">
+        <![CDATA[
+
+
+                            insert into cust_attr(custId,attrCd,value,status_cd)
+                            values(#{custId},#{attrCd},#{value},#{status_cd})
+
+
+        ]]>
+    </insert>
+    <!-- 删除实例客户信息 cust -->
+    <update id="deleteDataToCustAttr" parameterType="com.java110.entity.user.CustAttr">
+        delete * from cust_attr ct where 1=1
+        <if test="custId != null and custId != ''">
+            and ct.custId = #{custId}
+        </if>
+        <if test="attrCd != null and attrCd != ''">
+            and ct.attrCd = #{attrCd}
+        </if>
+    </update>
+    <!--根据客户ID 查询客户信息，其中包括 cust 和custAttr 数据-->
+    <select id="queryDataToCust" parameterType="com.java110.entity.user.Cust" resultMap="custMap">
+
+        select c.custId,c.name,c.email,c.cellphone,c.realName,c.sex,c.password,c.lanId,c.custAdress,c.custType,c.openId,
+        ca.custId,ca.attrCd,ca.value
+        from cust c, cust_attr ca where c.custId= ca.custId
+        <if test="custId != null and custId != ''">
+            and c.custId = #{custId}
+        </if>
+        <if test="versionId != null and versionId != ''">
+            and c.versionId = #{versionId}
+        </if>
+        and c.status_cd = '0'
+
+    </select>
+
+    <!-- 查询客户过程数据 -->
+    <select id="queryBoCust" parameterType="com.java110.entity.user.BoCust" resultType="com.java110.entity.user.BoCust">
+        select
+        bc.boId,bc.custId,bc.name,bc.email,bc.cellphone,bc.realName,bc.sex,bc.password,bc.lanId,bc.custAdress,bc.custType,bc.openId,bc.create_dt
+        from bo_cust bc where 1=1
+        <if test="boId != null and boId != ''">
+            and bc.boId = #{boId}
+        </if>
+        <if test="custId != null and custId != ''">
+            and bc.custId = #{custId}
+        </if>
+        <if test="versionId != null and versionId != ''">
+            and c.versionId = #{versionId}
+        </if>
+        and bc.state in ('ADD','DEL','KIP')
+        <if test="create_dt != null and create_dt != ''">
+            order by bc.create_dt desc
+        </if>
+    </select>
+    <!-- 查询客户属性过程表-->
+    <select id="queryBoCustAttr" parameterType="com.java110.entity.user.BoCustAttr"
+            resultType="com.java110.entity.user.BoCustAttr">
+        select bca.boId,bca.custId,bca.attrCd,bca.value,bca.state,bca.create_dt from bo_cust_attr bca where 1=1
+        <if test="boId !=null and boId != ''">
+            and bca.boId = #{boId}
+        </if>
+        <if test="custId != null and custId != ''">
+            and bca.custId = #{custId}
+        </if>
+        <if test="versionId != null and versionId != ''">
+            and bca.versionId = #{versionId}
+        </if>
+        <if test="create_dt != null and create_dt != ''">
+            order by bca.create_dt desc
+        </if>
+    </select>
+
+    <!-- 查询客户属性信息 -->
+    <select id="queryDataToCustAttr" parameterType="com.java110.entity.user.CustAttr"
+            resultType="com.java110.entity.user.CustAttr">
+        select * from cust_attr ca where 1=1
+        <if test="custId != null and custId != ''">
+            and ca.custId = #{custId}
+        </if>
+        <if test="versionId != null and versionId != ''">
+            and ca.versionId = #{versionId}
+        </if>
+        <if test="attrCd != null and attrCd != ''">
+            and ca.attrCd = #{attrCd}
+        </if>
+        and status_cd = '0'
+    </select>
+
+    <!-- 保存用户信息 -->
+    <insert id="saveBusinessUserInfo" parameterType="map">
+        insert into business_user(b_id,user_id,name,email,address,password,location_cd,age,sex,tel,level_cd,operate)
+        values(#{bId},#{userId},#{name},#{email},#{address},#{password},#{locationCd},#{age},#{sex},#{tel},#{levelCd},#{operate})
+    </insert>
+
+    <!-- 保存用户属性 -->
+    <insert id="saveBusinessUserAttr" parameterType="map">
+        insert into business_user_attr(b_id,user_id,attr_id,spec_cd,value,operate)
+        values(#{bId},#{userId},#{attrId},#{specCd},#{value},#{operate})
+    </insert>
+    <!-- 实例数据 -->
+    <insert id="saveUserInfoInstance" parameterType="map">
+        insert into u_user(user_id,name,email,address,password,location_cd,age,sex,tel,level_cd,b_id,status_cd)
+        select
+        bu.user_id,bu.name,bu.email,bu.address,bu.password,bu.location_cd,bu.age,bu.sex,bu.tel,bu.level_cd,bu.b_id,'0'
+        from business_user bu where bu.operate = 'ADD' and bu.b_id=#{b_id}
+    </insert>
+
+    <insert id="saveUserAttrInstance" parameterType="map">
+        insert into u_user_attr(attr_id,user_id,spec_cd,value,b_id,status_cd)
+        select bua.attr_id,bua.user_id,bua.spec_cd,bua.value,bua.b_id,'0' from business_user_attr bua where
+        bua.operate='ADD' and bua.b_id=#{b_id}
+    </insert>
+
+    <update id="updateUserInfoInstance" parameterType="map">
+        update u_user u set u.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,u.b_id = #{newBId}
+        </if>
+        <if test="name !=null and name != ''">
+            ,u.name= #{name}
+        </if>
+        <if test="email !=null and email != ''">
+            ,u.email= #{email}
+        </if>
+        <if test="address !=null and address != ''">
+            ,u.address= #{address}
+        </if>
+        <if test="password !=null and password != ''">
+            ,u.password= #{password}
+        </if>
+        <if test="locationCd !=null and locationCd != ''">
+            ,u.location_cd= #{locationCd}
+        </if>
+        <if test="age !=null and age != ''">
+            ,u.age= #{age}
+        </if>
+        <if test="sex !=null and sex != ''">
+            ,u.sex= #{sex}
+        </if>
+        <if test="tel !=null and tel != ''">
+            ,u.tel= #{tel}
+        </if>
+        <if test="score !=null and score != ''">
+            ,u.score= #{score}
+        </if>
+        where 1 = 1
+        <if test="bId != null and bId != ''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId !=''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="attrId != null and attrId != ''">
+            and u.attr_id = #{attrId}
+        </if>
+    </update>
+
+    <update id="updateUserAttrInstance" parameterType="map">
+        update u_user_attr ua set ua.status_cd = #{statusCd} where 1 = 1
+        <if test="bId != null and bId != ''">
+            and ua.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId !=''">
+            and ua.user_id = #{userId}
+        </if>
+    </update>
+
+
+    <!-- 查询用户信息 Business -->
+    <select id="queryBusinessUserInfo" parameterType="map" resultType="map">
+        select u.user_id,u.name,u.email,u.address,u.password,u.location_cd,
+        u.age,u.sex,u.tel,u.level_cd,u.b_id,u.operate
+        from business_user u where 1 = 1
+        <if test="operate != null and operate != ''">
+            and u.operate = #{operate}
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 查询用户属性信息 Business-->
+    <select id="queryBusinessUserInfoAttrs" parameterType="map" resultType="map">
+        select u.attr_id,u.user_id,u.spec_cd,u.value,u.b_id,u.operate
+        from business_user_attr u where 1 = 1
+        <if test="operate != null and operate != ''">
+            and u.operate = #{operate}
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="attrId != null and attrId != ''">
+            and u.attr_id = #{attrId}
+        </if>
+    </select>
+
+    <!-- 查询用户信息 -->
+    <select id="queryUserInfo" parameterType="map" resultType="map">
+        select u.user_id, u.user_id userId,u.name,u.name
+        userName,u.email,u.address,u.password,u.location_cd,u.location_cd locationCd,
+        u.age,u.sex,u.tel,u.level_cd,u.b_id
+        from u_user u where 1= 1
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and u.status_cd = #{statusCd}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 查询用户属性信息 -->
+    <select id="queryUserInfoAttrs" parameterType="map" resultType="map">
+        select u.attr_id,u.user_id,u.spec_cd,u.value,u.b_id,
+        u.attr_id attrId,u.user_id userId,u.spec_cd specCd,u.b_id bId
+        from u_user_attr u where u.status_cd = '0'
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="attrId != null and attrId != ''">
+            and u.attr_id = #{attrId}
+        </if>
+        <if test="specCd != null and specCd != ''">
+            and u.spec_cd = #{specCd}
+        </if>
+    </select>
+
+
+    <!--保存用户地址信息 add by wuxw 2018-06-29 -->
+    <insert id="saveBusinessUserAddress" parameterType="map">
+        insert into business_user_address(address_id,b_id,user_id,tel,postal_code,address,is_default,operate)
+        values(#{addressId},#{bId},#{userId},#{tel},#{postalCode},#{address},#{isDefault},#{operate})
+    </insert>
+
+
+    <!-- 查询用户地址信息 add by wuxw 2018-06-29-->
+    <select id="queryBusinessUserAddress" parameterType="map" resultType="map">
+        select ua.address_id,ua.b_id,ua.user_id,ua.tel,ua.postal_code,ua.address,ua.is_default,ua.operate
+        from business_user_address ua where 1 = 1
+        <if test="operate != null and operate != ''">
+            and ua.operate = #{operate}
+        </if>
+        <if test="bId != null and bId !=''">
+            and ua.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and ua.user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 保存用户地址 Business 数据到 Instance add by wuxw 2018-06-29 -->
+    <insert id="saveUserAddressInstance" parameterType="map">
+        insert into u_user_address(address_id,b_id,user_id,tel,postal_code,address,is_default,status_cd)
+        select ua.address_id,ua.b_id,ua.user_id,ua.tel,ua.postal_code,ua.address,ua.is_default,'0'
+        from business_user_address ua where 1 = 1
+        ua.operate = 'ADD' and ua.b_id=#{b_id}
+    </insert>
+
+    <!-- 作废用户地址信息数据 add by wuxw 2018-06-29-->
+    <update id="updateUserAddressInstance" parameterType="map">
+        update u_user_address ua set ua.status_cd = #{statusCd} where 1 = 1
+        <if test="bId != null and bId != ''">
+            and ua.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId !=''">
+            and ua.user_id = #{userId}
+        </if>
+        <if test="addressId != null and addressId != ''">
+            and ua.address_id = #{addressId}
+        </if>
+    </update>
+
+
+    <!--保存用户打标信息 add by wuxw 2018-06-29 -->
+    <insert id="saveBusinessUserTag" parameterType="map">
+        insert into business_user_tag(tag_id,b_id,user_id,tag_cd,remark,operate)
+        values(#{tagId},#{bId},#{userId},#{tagCd},#{remark},#{operate})
+    </insert>
+
+
+    <!-- 查询用户地址信息 add by wuxw 2018-06-29-->
+    <select id="queryBusinessUserTag" parameterType="map" resultType="map">
+        select ut.tag_id,ut.b_id,ut.user_id,ut.tag_cd,ut.remark,ut.operate
+        from business_user_tag ut where 1 = 1
+        <if test="operate != null and operate != ''">
+            and ut.operate = #{operate}
+        </if>
+        <if test="bId != null and bId !=''">
+            and ut.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and ut.user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 保存用户地址 Business 数据到 Instance add by wuxw 2018-06-29 -->
+    <insert id="saveUserTagInstance" parameterType="map">
+        insert into u_user_tag(tag_id,b_id,user_id,tag_cd,remark,status_cd)
+        select ut.tag_id,ut.b_id,ut.user_id,ut.tag_cd,ut.remark,'0'
+        from business_user_tag ut where 1 = 1
+        ut.operate = 'ADD' and ut.b_id=#{b_id}
+    </insert>
+
+    <!-- 作废用户地址信息数据 add by wuxw 2018-06-29-->
+    <update id="updateUserTagInstance" parameterType="map">
+        update u_user_tag ut set ut.status_cd = #{statusCd} where 1 = 1
+        <if test="bId != null and bId != ''">
+            and ut.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId !=''">
+            and ut.user_id = #{userId}
+        </if>
+        <if test="addressId != null and addressId != ''">
+            and ut.address_id = #{tagId}
+        </if>
+    </update>
+
+
+    <!--保存用户证件信息 add by wuxw 2018-06-29 -->
+    <insert id="saveBusinessUserCredentials" parameterType="map">
+        insert into business_user_credentials(credentials_id,b_id,user_id,credentials_cd,value,operate)
+        values(#{credentialsId},#{bId},#{userId},#{credentialsCd},#{value},#{operate})
+    </insert>
+
+
+    <!-- 查询用户地址信息 add by wuxw 2018-06-29-->
+    <select id="queryBusinessUserCredentials" parameterType="map" resultType="map">
+        select uc.credentials_id,uc.b_id,uc.user_id,uc.credentials_cd,uc.value,uc.operate
+        from business_user_credentials uc where 1 = 1
+        <if test="operate != null and operate != ''">
+            and uc.operate = #{operate}
+        </if>
+        <if test="bId != null and bId !=''">
+            and uc.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and uc.user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 保存用户地址 Business 数据到 Instance add by wuxw 2018-06-29 -->
+    <insert id="saveUserCredentialsInstance" parameterType="map">
+        insert into u_user_credentials(credentials_id,b_id,user_id,credentials_cd,value,status_cd)
+        select uc.credentials_id,uc.b_id,uc.user_id,uc.credentials_cd,uc.value,'0'
+        from business_user_credentials uc where 1 = 1
+        uc.operate = 'ADD' and uc.b_id=#{b_id}
+    </insert>
+
+    <!-- 作废用户地址信息数据 add by wuxw 2018-06-29-->
+    <update id="updateUserCredentialsInstance" parameterType="map">
+        update u_user_credentials uc set uc.status_cd = #{statusCd} where 1 = 1
+        <if test="bId != null and bId != ''">
+            and uc.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId !=''">
+            and uc.user_id = #{userId}
+        </if>
+        <if test="addressId != null and addressId != ''">
+            and uc.credentials_id = #{credentialsId}
+        </if>
+    </update>
+
+    <!-- 查询员工总量 -->
+    <select id="getStaffCount" parameterType="Map" resultType="Map">
+        <if test="orgIds != null and orgIds.length > 0">
+        select count(*) count from(
+        </if>
+        select count(1) count
+        from u_user u
+        inner join s_store_user su on su.user_id = u.user_id
+        <if test="(orgId !=null and orgId != '')||(orgIds != null and orgIds.length > 0)">
+            left join u_org_staff_rel uosr on u.user_id = uosr.staff_id and uosr.status_cd = '0'
+            left join u_org uo on uosr.org_id = uo.org_id and uo.status_cd = '0'
+        </if>
+        where u.level_cd = '01'
+        <if test="storeId !=null and storeId != ''">
+            and su.store_id = #{storeId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uosr.org_id = #{orgId}
+        </if>
+        and u.status_cd = '0'
+        <if test="tel !=null and tel != ''">
+            and u.tel= #{tel}
+        </if>
+        <if test="name !=null and name != ''">
+            and u.name like concat('%',#{name},'%')
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            and u.name like concat('%',#{staffName},'%')
+        </if>
+        <if test="staffId != null and staffId !=''">
+            and u.user_id = #{staffId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uo.org_id = #{orgId}
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            and uosr.org_id in
+            <foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and uosr.status_cd =0
+            GROUP BY u.user_id
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            )a
+        </if>
+    </select>
+
+    <!-- 查询员工总量 -->
+    <select id="getStaffs" parameterType="Map" resultType="Map">
+        select u.user_id, u.user_id userId,u.name,u.name
+        userName,u.email,u.address,u.location_cd,u.location_cd locationCd,
+        u.age,u.sex,u.tel,u.level_cd levelCd,u.b_id,su.rel_cd relCd,td.name relCdName
+        <if test="orgId !=null and orgId != ''">
+            ,uo.org_id orgId,uo.org_name,uo.org_name orgName,uosr.store_id storeId,uosr.rel_id relId
+        </if>
+        from
+        u_user u
+        inner join s_store_user su on su.user_id = u.user_id
+        left join t_dict td on su.rel_cd = td.status_cd and td.table_name='s_store_user' and td.table_columns='rel_cd'
+        <if test="(orgId !=null and orgId != '')||(orgIds != null and orgIds.length > 0)">
+            left join u_org_staff_rel uosr on u.user_id = uosr.staff_id and uosr.status_cd = '0'
+            left join u_org uo on uosr.org_id = uo.org_id and uo.status_cd = '0'
+        </if>
+        where u.level_cd = '01'
+        <if test="storeId !=null and storeId != ''">
+            and su.store_id = #{storeId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uosr.org_id = #{orgId}
+        </if>
+        and u.status_cd = '0'
+        <if test="tel !=null and tel != ''">
+            and u.tel= #{tel}
+        </if>
+        <if test="name !=null and name != ''">
+            and u.name like concat('%',#{name},'%')
+        </if>
+        <if test="staffName !=null and staffName != ''">
+            and u.name like concat('%',#{staffName},'%')
+        </if>
+        <if test="staffId != null and staffId !=''">
+            and u.user_id = #{staffId}
+        </if>
+        <if test="orgId !=null and orgId != ''">
+            and uo.org_id = #{orgId}
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orgIds != null and orgIds.length > 0">
+            and uosr.org_id in
+            <foreach collection="orgIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            and uosr.status_cd =0
+            GROUP BY u.user_id
+        </if>
+        order by u.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 查询用户 -->
+    <select id="getUsers" parameterType="Map" resultType="Map">
+        select u.user_id, u.user_id userId,u.name,u.name
+        userName,u.email,u.address,u.password,u.location_cd,u.location_cd locationCd,
+        u.age,u.sex,u.tel,u.level_cd,u.b_id,u.level_cd levelCd,u.score
+        from u_user u
+        <if test="openId != null and openId !=''">
+            ,u_user_attr ua
+        </if>
+        <if test="key != null and key !=''">
+            ,u_user_attr ub
+        </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
+        where 1= 1
+        <if test="openId != null and openId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911001'
+            and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="key != null and key != ''">
+            and u.user_id = ub.user_id
+            and ub.spec_cd = '100202061602'
+            and ub.value = #{key}
+            and ub.status_cd = '0'
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and u.status_cd = #{statusCd}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="name !=null and name != ''">
+            and u.name= #{name}
+        </if>
+        <if test="userName !=null and userName != ''">
+            and u.name= #{userName}
+        </if>
+        <if test="email !=null and email != ''">
+            and u.email= #{email}
+        </if>
+        <if test="password !=null and password != ''">
+            and u.password= #{password}
+        </if>
+        <if test="locationCd !=null and locationCd != ''">
+            and u.location_cd= #{locationCd}
+        </if>
+        <if test="age !=null and age != ''">
+            and u.age= #{age}
+        </if>
+        <if test="sex !=null and sex != ''">
+            and u.sex= #{sex}
+        </if>
+        <if test="tel !=null and tel != ''">
+            and u.tel= #{tel}
+        </if>
+        <if test="levelCd !=null and levelCd != ''">
+            and u.level_cd= #{levelCd}
+        </if>
+        <if test="levelCds != null">
+            and u.level_cd in
+            <foreach collection="levelCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test='userFlag !=null and userFlag =="1"'>
+            and u.level_cd != '02'
+        </if>
+        order by u.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <select id="getUserCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from u_user u
+        <if test="openId != null and openId !=''">
+            ,u_user_attr ua
+        </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
+        where 1= 1
+        <if test="openId != null and openId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911001'
+            and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and u.status_cd = #{statusCd}
+        </if>
+        <if test="userIds != null and userIds != null">
+            and u.user_id in
+            <foreach collection="userIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+    <!-- 查询用户密码 -->
+    <select id="getUserHasPwd" parameterType="Map" resultType="Map">
+        select u.user_id, u.user_id userId,u.name,u.name
+        userName,u.email,u.address,u.password,u.location_cd,u.location_cd locationCd,
+        u.age,u.sex,u.tel,u.level_cd levelCd,u.b_id,u.password
+        from u_user u
+        <if test="openId != null and openId !=''">
+            ,u_user_attr ua
+        </if>
+        <if test="unionId != null and unionId !=''">
+            ,u_user_attr ua
+        </if>
+        where 1= 1
+        <if test="openId != null and openId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911001'
+            and ua.value = #{openId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="unionId != null and unionId != ''">
+            and u.user_id = ua.user_id
+            and ua.spec_cd = '100201911002'
+            and ua.value = #{unionId}
+            and ua.status_cd = '0'
+        </if>
+        <if test="bId != null and bId !=''">
+            and u.b_id = #{bId}
+        </if>
+        <if test="userId != null and userId != ''">
+            and u.user_id = #{userId}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and u.status_cd = #{statusCd}
+        </if>
+
+    </select>
+
+</mapper>

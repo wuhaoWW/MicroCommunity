@@ -1,0 +1,29 @@
+header:
+ "appId": "外系统ID，分配得到",
+ "transactionId": "100000000020180409224736000001",
+ "requestTime": "20180409224736",
+  "userId": "用户ID"
+
+body:
+{
+"orders": {
+    "orderTypeCd": "订单类型,查询,受理",
+    "remark":"备注",
+    "attrs": [{
+      "specCd": "配置的字段ID",
+      "value": "具体值"
+    }]
+  },
+  "business": [{
+    "businessTypeCd": "B",
+    "invokeModel":"S",
+    "remark": "备注",
+        "seq":1,
+    "datas": {
+    },
+    "attrs": [{
+      "specCd": "配置的字段ID",
+      "value": "具体值"
+    }]
+  }]
+}

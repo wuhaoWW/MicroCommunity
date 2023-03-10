@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="visitServiceDaoImpl">
+
+    <!-- 保存访客信息信息 add by wuxw 2018-07-03 -->
+    <insert id="saveBusinessVisitInfo" parameterType="Map">
+        insert into business_visit_info(departure_time, v_name, visit_gender, owner_id, user_id, v_id, phone_number,
+                                        operate, visit_case, community_id, b_id, visit_time, car_num, entourage,
+                                        reason_type, state, state_remark, ps_id, free_time, record_state)
+        values (#{departureTime}, #{vName}, #{visitGender}, #{ownerId}, #{userId}, #{vId}, #{phoneNumber}, #{operate},
+                #{visitCase}, #{communityId}, #{bId}, #{visitTime}, #{carNum}, #{entourage}, #{reasonType}, #{state},
+                #{stateRemark}, #{psId}, #{freeTime}, #{recordState})
+    </insert>
+
+    <!-- 查询访客信息信息（Business） add by wuxw 2018-07-03 -->
+    <select id="getBusinessVisitInfo" parameterType="Map" resultType="Map">
+        select t.departure_time,t.departure_time departureTime,t.v_name,t.v_name vName,t.visit_gender,t.visit_gender
+        visitGender,t.owner_id,t.owner_id ownerId,t.user_id,t.user_id userId,t.v_id,t.v_id vId,t.visit_time,t.visit_time
+        visitTime,t.phone_number,t.phone_number phoneNumber,t.operate,t.visit_case,t.visit_case
+        visitCase,t.community_id,t.community_id communityId,t.b_id,t.b_id ,t.car_num,t.car_num carNum,t.entourage,
+        t.reason_type,t.reason_type reasonType,t.state,t.state_remark,t.state_remark
+        stateRemark,t.create_time,t.create_time createTime,t.ps_id,t.ps_id psId,t.free_time,t.free_time freeTime,
+        t.record_state,t.record_state recordState
+        from business_visit_info t
+        where 1 =1
+        <if test="departureTime !=null ">
+            and t.departure_time= #{departureTime}
+        </if>
+        <if test="vName !=null and vName != ''">
+            and t.v_name= #{vName}
+        </if>
+        <if test="visitGender !=null and visitGender != ''">
+            and t.visit_gender= #{visitGender}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="vId !=null and vId != ''">
+            and t.v_id= #{vId}
+        </if>
+        <if test="visitTime !=null ">
+            and t.visit_time= #{visitTime}
+        </if>
+        <if test="freeTime !=null ">
+            and t.free_time= #{freeTime}
+        </if>
+        <if test="phoneNumber !=null and phoneNumber != ''">
+            and t.phone_number= #{phoneNumber}
+        </if>
+        <if test="operate !=null and operate != ''">
+            and t.operate= #{operate}
+        </if>
+        <if test="visitCase !=null and visitCase != ''">
+            and t.visit_case= #{visitCase}
+        </if>
+        <if test="carNum !=null and carNum != ''">
+            and t.car_num= #{carNum}
+        </if>
+        <if test="entourage !=null and entourage != ''">
+            and t.entourage= #{entourage}
+        </if>
+        <if test="reasonType !=null and reasonType != ''">
+            and t.reason_type= #{reasonType}
+        </if>
+        <if test="recordState !=null and recordState != ''">
+            and t.record_state= #{recordState}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="stateRemark !=null and stateRemark != ''">
+            and t.state_remark= #{stateRemark}
+        </if>
+        <if test="psId !=null and psId != ''">
+            and t.ps_id= #{psId}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </select>
+
+    <!-- 保存访客信息信息至 instance表中 add by wuxw 2018-07-03 -->
+    <insert id="saveVisitInfoInstance" parameterType="Map">
+        insert into s_visit_info(
+        departure_time,v_name,status_cd,visit_gender,owner_id,user_id,v_id,visit_time,phone_number,visit_case,community_id,b_id,car_num,
+        entourage,reason_type,state,state_remark,ps_id,free_time,record_state
+        ) select
+        t.departure_time,t.v_name,'0',t.visit_gender,t.owner_id,t.user_id,t.v_id,t.visit_time,t.phone_number,t.visit_case,t.community_id,t.b_id,
+        t.car_num,t.entourage,t.reason_type,t.state,t.state_remark,t.ps_id,t.free_time,t.record_state
+        from business_visit_info t where 1=1
+        <if test="departureTime !=null ">
+            and t.departure_time= #{departureTime}
+        </if>
+        <if test="vName !=null and vName != ''">
+            and t.v_name= #{vName}
+        </if>
+        <if test="visitGender !=null and visitGender != ''">
+            and t.visit_gender= #{visitGender}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="vId !=null and vId != ''">
+            and t.v_id= #{vId}
+        </if>
+        <if test="visitTime !=null ">
+            and t.visit_time= #{visitTime}
+        </if>
+        <if test="freeTime !=null ">
+            and t.free_time= #{freeTime}
+        </if>
+        <if test="phoneNumber !=null and phoneNumber != ''">
+            and t.phone_number= #{phoneNumber}
+        </if>
+        <if test="carNum !=null and carNum != ''">
+            and t.car_num= #{carNum}
+        </if>
+        <if test="entourage !=null and entourage != ''">
+            and t.entourage= #{entourage}
+        </if>
+        <if test="reasonType !=null and reasonType != ''">
+            and t.reason_type= #{reasonType}
+        </if>
+        <if test="recordState !=null and recordState != ''">
+            and t.record_state= #{recordState}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="stateRemark !=null and stateRemark != ''">
+            and t.state_remark= #{stateRemark}
+        </if>
+        <if test="psId !=null and psId != ''">
+            and t.ps_id= #{psId}
+        </if>
+        and t.operate= 'ADD'
+        <if test="visitCase !=null and visitCase != ''">
+            and t.visit_case= #{visitCase}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </insert>
+
+    <!-- 查询访客信息信息 add by wuxw 2018-07-03 -->
+    <select id="getVisitInfo" parameterType="Map" resultType="Map">
+        select t.departure_time,t.departure_time departureTime,t.v_name,t.v_name vName,t.status_cd,t.status_cd
+        statusCd,t.visit_gender,t.visit_gender visitGender,t.owner_id,t.owner_id ownerId,t.user_id,t.user_id
+        userId,t.v_id,t.v_id vId,t.visit_time,t.visit_time visitTime,t.phone_number,t.phone_number
+        phoneNumber,t.visit_case,t.visit_case visitCase,t.community_id,t.community_id communityId,t.b_id,t.b_id bId,
+        t.car_num,t.car_num carNum,t.entourage,t.reason_type,t.reason_type
+        reasonType,t.state,t.state_remark,t.state_remark stateRemark,td.name stateName,t.create_time,
+        t.create_time createTime,t.ps_id,t.ps_id psId,t.free_time,t.free_time freeTime,
+        t.record_state,t.record_state recordState,ps.num parkingSpaceNum,pa.num parkingAreaName,bo.name ownerName,
+        fr.file_real_name fileRealName,fr.file_save_name fileSaveName
+        from s_visit_info t
+        left join t_dict td on t.state = td.status_cd and td.table_name = 's_visit_info' and td.table_columns = 'state'
+        left join parking_space ps on t.ps_id = ps.ps_id and ps.status_cd = '0'
+        left join parking_area pa on ps.pa_id = pa.pa_id and  pa.status_cd = '0'
+        left join building_owner bo on t.owner_id = bo.owner_id and bo.owner_type_cd = '1001' and bo.status_cd = '0'
+        left join file_rel fr on fr.obj_id = t.v_id and fr.status_cd = '0'
+        where 1 = 1
+        <if test="departureTime !=null ">
+            and t.departure_time= #{departureTime}
+        </if>
+        <if test="vName !=null and vName != ''">
+            and t.v_name= #{vName}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="visitGender !=null and visitGender != ''">
+            and t.visit_gender= #{visitGender}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="vId !=null and vId != ''">
+            and t.v_id= #{vId}
+        </if>
+        <if test="visitTime !=null ">
+            and t.visit_time= #{visitTime}
+        </if>
+        <if test="freeTime !=null ">
+            and t.free_time= #{freeTime}
+        </if>
+        <if test="phoneNumber !=null and phoneNumber != ''">
+            and t.phone_number= #{phoneNumber}
+        </if>
+        <if test="visitCase !=null and visitCase != ''">
+            and t.visit_case= #{visitCase}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="visitStartTime !=null and visitStartTime !='' ">
+            and t.visit_time &gt;= #{visitStartTime}
+        </if>
+        <if test="visitEndTime !=null and visitEndTime !='' ">
+            and t.visit_time &lt;= #{visitEndTime}
+        </if>
+        <if test="departureEndTime != null and departureEndTime != ''">
+            and t.departure_time &lt;= #{departureEndTime}
+        </if>
+        <if test="carNum !=null and carNum != ''">
+            and t.car_num= #{carNum}
+        </if>
+        <if test="entourage !=null and entourage != ''">
+            and t.entourage= #{entourage}
+        </if>
+        <if test="reasonType !=null and reasonType != ''">
+            and t.reason_type= #{reasonType}
+        </if>
+        <if test="recordState !=null and recordState != ''">
+            and t.record_state= #{recordState}
+        </if>
+        <if test="psId !=null and psId != ''">
+            and t.ps_id= #{psId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="stateRemark !=null and stateRemark != ''">
+            and t.state_remark= #{stateRemark}
+        </if>
+        <if test="carNumNoEmpty !=null and carNumNoEmpty != ''">
+            and t.car_num!= ""
+        </if>
+        <if test="sameDay !=null and sameDay != ''">
+            and TO_DAYS(t.create_time) = TO_DAYS(NOW())
+        </if>
+        <if test="flag != null and flag == '1'">
+            and t.ps_id != '' and t.ps_id != '-1' and t.ps_id is not null
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 修改访客信息信息 add by wuxw 2018-07-03 -->
+    <update id="updateVisitInfoInstance" parameterType="Map">
+        update s_visit_info t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="departureTime !=null ">
+            , t.departure_time= #{departureTime}
+        </if>
+        <if test="vName !=null and vName != ''">
+            , t.v_name= #{vName}
+        </if>
+        <if test="visitGender !=null and visitGender != ''">
+            , t.visit_gender= #{visitGender}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            , t.owner_id= #{ownerId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            , t.user_id= #{userId}
+        </if>
+        <if test="visitTime !=null ">
+            , t.visit_time= #{visitTime}
+        </if>
+        <if test="freeTime !=null ">
+            , t.free_time= #{freeTime}
+        </if>
+        <if test="phoneNumber !=null and phoneNumber != ''">
+            , t.phone_number= #{phoneNumber}
+        </if>
+        <if test="visitCase !=null and visitCase != ''">
+            , t.visit_case= #{visitCase}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            , t.community_id= #{communityId}
+        </if>
+        <if test="carNum !=null and carNum != ''">
+            , t.car_num= #{carNum}
+        </if>
+        <if test="entourage !=null and entourage != ''">
+            , t.entourage= #{entourage}
+        </if>
+        <if test="reasonType !=null and reasonType != ''">
+            , t.reason_type= #{reasonType}
+        </if>
+        <if test="recordState !=null and recordState != ''">
+            , t.record_state= #{recordState}
+        </if>
+        <if test="state !=null and state != ''">
+            , t.state= #{state}
+        </if>
+        <if test="stateRemark !=null and stateRemark != ''">
+            , t.state_remark= #{stateRemark}
+        </if>
+        <if test="psId !=null and psId != ''">
+            , t.ps_id= #{psId}
+        </if>
+        where 1=1
+        <if test="vId !=null and vId != ''">
+            and t.v_id= #{vId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </update>
+
+    <!-- 查询访客信息数量 add by wuxw 2018-07-03 -->
+    <select id="queryVisitsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from s_visit_info t
+        left join t_dict td on t.state = td.status_cd and td.table_name = 's_visit_info' and td.table_columns = 'state'
+        left join parking_space ps on t.ps_id = ps.ps_id and ps.status_cd = '0'
+        left join parking_area pa on ps.pa_id = pa.pa_id and  pa.status_cd = '0'
+        left join building_owner bo on t.owner_id = bo.owner_id and bo.owner_type_cd = '1001' and bo.status_cd = '0'
+        left join file_rel fr on fr.obj_id = t.v_id and fr.status_cd = '0'
+        where 1 = 1
+        <if test="departureTime !=null ">
+            and t.departure_time= #{departureTime}
+        </if>
+        <if test="vName !=null and vName != ''">
+            and t.v_name= #{vName}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="visitGender !=null and visitGender != ''">
+            and t.visit_gender= #{visitGender}
+        </if>
+        <if test="ownerId !=null and ownerId != ''">
+            and t.owner_id= #{ownerId}
+        </if>
+        <if test="vId !=null and vId != ''">
+            and t.v_id= #{vId}
+        </if>
+        <if test="visitTime !=null ">
+            and t.visit_time= #{visitTime}
+        </if>
+        <if test="freeTime !=null ">
+            and t.free_time= #{freeTime}
+        </if>
+        <if test="phoneNumber !=null and phoneNumber != ''">
+            and t.phone_number= #{phoneNumber}
+        </if>
+        <if test="visitCase !=null and visitCase != ''">
+            and t.visit_case= #{visitCase}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="visitStartTime !=null and visitStartTime !='' ">
+            and t.visit_time &gt;= #{visitStartTime}
+        </if>
+        <if test="visitEndTime !=null and visitEndTime !='' ">
+            and t.visit_time &lt;= #{visitEndTime}
+        </if>
+        <if test="carNum !=null and carNum != ''">
+            and t.car_num= #{carNum}
+        </if>
+        <if test="entourage !=null and entourage != ''">
+            and t.entourage= #{entourage}
+        </if>
+        <if test="reasonType !=null and reasonType != ''">
+            and t.reason_type= #{reasonType}
+        </if>
+        <if test="recordState !=null and recordState != ''">
+            and t.record_state= #{recordState}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="stateRemark !=null and stateRemark != ''">
+            and t.state_remark= #{stateRemark}
+        </if>
+        <if test="psId !=null and psId != ''">
+            and t.ps_id= #{psId}
+        </if>
+    </select>
+
+</mapper>

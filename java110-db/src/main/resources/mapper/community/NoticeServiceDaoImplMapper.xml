@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="noticeServiceDaoImpl">
+
+    <!-- 保存通知信息 add by wuxw 2018-07-03 -->
+    <insert id="saveBusinessNoticeInfo" parameterType="Map">
+        insert into business_notice(
+        operate,notice_type_cd,context,start_time,end_time,community_id,title,b_id,user_id,notice_id,obj_type,obj_id,state
+        ) values (
+        #{operate},#{noticeTypeCd},#{context},#{startTime},#{endTime},#{communityId},#{title},#{bId},#{userId},#{noticeId},
+        #{objType},#{objId},#{state}
+        )
+    </insert>
+
+    <!-- 查询通知信息（Business） add by wuxw 2018-07-03 -->
+    <select id="getBusinessNoticeInfo" parameterType="Map" resultType="Map">
+        select t.operate,t.notice_type_cd,t.notice_type_cd noticeTypeCd,t.context,t.start_time,t.end_time,t.start_time
+        startTime,t.end_time endTime,t.community_id,t.community_id communityId,t.title,t.b_id,t.b_id bId,t.user_id,t.user_id
+        userId,t.notice_id,t.notice_id noticeId,t.obj_type,t.obj_id,t.obj_type objType,t.obj_id objId,t.state
+        from business_notice t
+        where 1 =1
+        <if test="operate !=null and operate != ''">
+            and t.operate= #{operate}
+        </if>
+        <if test="noticeTypeCd !=null and noticeTypeCd != ''">
+            and t.notice_type_cd= #{noticeTypeCd}
+        </if>
+        <if test="context !=null and context != ''">
+            and t.context= #{context}
+        </if>
+        <if test="startTime !=null">
+            and t.start_time &lt;= #{startTime}
+        </if>
+        <if test="endTime !=null">
+            and t.end_time &gt;= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="title !=null and title != ''">
+            and t.title= #{title}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="noticeId !=null and noticeId != ''">
+            and t.notice_id= #{noticeId}
+        </if>
+    </select>
+
+    <!-- 保存通知信息至 instance表中 add by wuxw 2018-07-03 -->
+    <insert id="saveNoticeInfoInstance" parameterType="Map">
+        insert into n_notice(
+        notice_type_cd,context,start_time,end_time,status_cd,community_id,title,b_id,user_id,notice_id,obj_type,obj_id,state
+        ) select t.notice_type_cd,t.context,t.start_time,t.end_time,'0',t.community_id,t.title,t.b_id,t.user_id,t.notice_id,
+        t.obj_type,t.obj_id,t.state
+        from
+        business_notice t where 1=1
+        and t.operate= 'ADD'
+        <if test="noticeTypeCd !=null and noticeTypeCd != ''">
+            and t.notice_type_cd= #{noticeTypeCd}
+        </if>
+        <if test="context !=null and context != ''">
+            and t.context= #{context}
+        </if>
+        <if test="startTime !=null">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="title !=null and title != ''">
+            and t.title= #{title}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="userId !=null and userId != ''">
+            and t.user_id= #{userId}
+        </if>
+        <if test="noticeId !=null and noticeId != ''">
+            and t.notice_id= #{noticeId}
+        </if>
+    </insert>
+
+    <!-- 查询通知信息 add by wuxw 2018-07-03 -->
+    <select id="getNoticeInfo" parameterType="Map" resultType="Map">
+        select t.notice_type_cd,t.notice_type_cd noticeTypeCd,t.context,t.start_time,t.start_time
+        startTime,t.end_time,t.end_time endTime,t.status_cd,t.status_cd statusCd,t.community_id,t.community_id communityId,t.title,t.b_id,t.b_id
+        bId,t.user_id,t.user_id userId,t.notice_id,t.notice_id noticeId,t.create_time,t.create_time createTime,
+        d.`name` noticeTypeCdName,
+        t.obj_type,t.obj_id,t.obj_type objType,t.obj_id objId,t.state,d1.name stateName
+        from n_notice t
+        left join t_dict d on d.table_name = 'n_notice' and d.table_columns = 'notice_type_cd' and t.notice_type_cd = d.status_cd
+        left join t_dict d1 on d1.table_name = 'n_notice' and d1.table_columns = 'state' and t.state = d1.status_cd
+        where 1 =1
+        <if test="noticeTypeCd !=null and noticeTypeCd != ''">
+            and t.notice_type_cd= #{noticeTypeCd}
+        </if>
+        <if test="noticeTypeCds !=null">
+            and t.notice_type_cd in
+            <foreach collection="noticeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="context !=null and context != ''">
+            and t.context= #{context}
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time &lt;= #{startTime}
+        </if>
+        <if test="endTime !=null  and endTime != ''">
+            and t.end_time &gt;= #{endTime}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="title !=null and title != ''">
+            and t.title like concat('%',#{title},'%')
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+        <if test="noticeId !=null and noticeId != ''">
+            and t.notice_id= #{noticeId}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 修改通知信息 add by wuxw 2018-07-03 -->
+    <update id="updateNoticeInfoInstance" parameterType="Map">
+        update n_notice t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="noticeTypeCd !=null and noticeTypeCd != ''">
+            , t.notice_type_cd= #{noticeTypeCd}
+        </if>
+        <if test="context !=null and context != ''">
+            , t.context= #{context}
+        </if>
+        <if test="startTime !=null">
+            , t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null">
+            , t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            , t.community_id= #{communityId}
+        </if>
+        <if test="title !=null and title != ''">
+            , t.title= #{title}
+        </if>
+        <if test="state !=null and state != ''">
+            , t.state= #{state}
+        </if>
+        where 1=1
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="noticeId !=null and noticeId != ''">
+            and t.notice_id= #{noticeId}
+        </if>
+    </update>
+
+    <!-- 查询通知数量 add by wuxw 2018-07-03 -->
+    <select id="queryNoticesCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from n_notice t
+        where 1 =1
+        <if test="noticeTypeCd !=null and noticeTypeCd != ''">
+            and t.notice_type_cd= #{noticeTypeCd}
+        </if>
+        <if test="noticeTypeCds !=null">
+            and t.notice_type_cd in
+            <foreach collection="noticeTypeCds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="context !=null and context != ''">
+            and t.context= #{context}
+        </if>
+        <if test="startTime !=null and startTime != ''">
+            and t.start_time &lt;= #{startTime}
+        </if>
+        <if test="endTime !=null  and endTime != ''">
+            and t.end_time &gt;= #{endTime}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="title !=null and title != ''">
+            and t.title like concat('%',#{title},'%')
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="noticeId !=null and noticeId != ''">
+            and t.notice_id= #{noticeId}
+        </if>
+        <if test="state !=null and state != ''">
+            and t.state= #{state}
+        </if>
+    </select>
+
+</mapper>

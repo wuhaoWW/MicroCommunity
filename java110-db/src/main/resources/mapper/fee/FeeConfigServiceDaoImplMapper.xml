@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="feeConfigServiceDaoImpl">
+
+    <!-- 保存费用配置信息 add by wuxw 2018-07-03 -->
+    <insert id="saveBusinessFeeConfigInfo" parameterType="Map">
+        insert into business_pay_fee_config(fee_type_cd, computing_formula, additional_amount, square_price, is_default,
+                                            operate, config_id, fee_flag, fee_name,
+                                            start_time, end_time, community_id, b_id, bill_type, payment_cd,
+                                            payment_cycle, computing_formula_text, deduct_from)
+        values (#{feeTypeCd}, #{computingFormula}, #{additionalAmount}, #{squarePrice}, #{isDefault}, #{operate},
+                #{configId},
+                #{feeFlag}, #{feeName}, #{startTime}, #{endTime}, #{communityId}, #{bId}, #{billType}, #{paymentCd},
+                #{paymentCycle},
+                #{computingFormulaText}, #{deductFrom})
+    </insert>
+
+    <!-- 查询费用配置信息（Business） add by wuxw 2018-07-03 -->
+    <select id="getBusinessFeeConfigInfo" parameterType="Map" resultType="Map">
+        select t.fee_type_cd,t.fee_type_cd feeTypeCd,t.computing_formula,t.computing_formula
+        computingFormula,t.additional_amount,t.additional_amount additionalAmount,t.square_price,t.square_price
+        squarePrice,t.is_default,t.is_default isDefault,t.operate,t.config_id,t.config_id configId,t.fee_flag,t.fee_flag
+        feeFlag,t.fee_name,t.fee_name feeName,t.start_time,t.start_time startTime,t.end_time,t.end_time
+        endTime,t.community_id,t.community_id communityId,t.b_id,t.b_id bId,t.bill_type,t.bill_type billType,
+        t.payment_cd,t.payment_cycle,t.computing_formula_text,t.computing_formula_text
+        computingFormulaText,t.deduct_from,t.deduct_from deductFrom,t.pay_online payOnline,t.scale,t.decimal_place decimalPlace,t.units
+        from business_pay_fee_config t
+        where 1 =1
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="computingFormula !=null and computingFormula != ''">
+            and t.computing_formula= #{computingFormula}
+        </if>
+        <if test="additionalAmount !=null and additionalAmount != '' or additionalAmount == 0">
+            and t.additional_amount= #{additionalAmount}
+        </if>
+        <if test="squarePrice !=null and squarePrice != '' or squarePrice == 0">
+            and t.square_price= #{squarePrice}
+        </if>
+        <if test="isDefault !=null and isDefault != ''">
+            and t.is_default= #{isDefault}
+        </if>
+        <if test="operate !=null and operate != ''">
+            and t.operate= #{operate}
+        </if>
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="feeName !=null and feeName != ''">
+            and t.fee_name like '%${feeName}%'
+        </if>
+        <if test="billType !=null and billType != ''">
+            and t.bill_type= #{billType}
+        </if>
+        <if test="startTime !=null ">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="deductFrom !=null and deductFrom != ''">
+            and t.deduct_from = #{deductFrom}
+        </if>
+    </select>
+
+    <!-- 保存费用配置信息至 instance表中 add by wuxw 2018-07-03 -->
+    <insert id="saveFeeConfigInfoInstance" parameterType="Map">
+        insert into pay_fee_config(
+        fee_type_cd,computing_formula,additional_amount,status_cd,square_price,is_default,config_id,fee_flag,fee_name,
+        start_time,end_time,community_id,b_id,bill_type,payment_cd,payment_cycle,computing_formula_text,deduct_from
+        ) select
+        t.fee_type_cd,t.computing_formula,t.additional_amount,'0',t.square_price,t.is_default,t.config_id,t.fee_flag,t.fee_name,
+        t.start_time,t.end_time,t.community_id,
+        t.b_id,t.bill_type,t.payment_cd,t.payment_cycle,t.computing_formula_text,t.deduct_from
+        from business_pay_fee_config t where 1=1
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="computingFormula !=null and computingFormula != ''">
+            and t.computing_formula= #{computingFormula}
+        </if>
+        <if test="additionalAmount !=null and additionalAmount != ''">
+            and t.additional_amount= #{additionalAmount}
+        </if>
+        <if test="squarePrice !=null and squarePrice != ''">
+            and t.square_price= #{squarePrice}
+        </if>
+        <if test="isDefault !=null and isDefault != ''">
+            and t.is_default= #{isDefault}
+        </if>
+        and t.operate= 'ADD'
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="feeName !=null and feeName != ''">
+            and t.fee_name= #{feeName}
+        </if>
+        <if test="billType !=null and billType != ''">
+            and t.bill_type= #{billType}
+        </if>
+        <if test="startTime !=null ">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </insert>
+
+    <!-- 查询费用配置信息 add by wuxw 2018-07-03 -->
+    <select id="getFeeConfigInfo" parameterType="Map" resultType="Map">
+        select t.fee_type_cd,t.fee_type_cd feeTypeCd,t.computing_formula,t.computing_formula
+        computingFormula,t.additional_amount,t.additional_amount additionalAmount,t.status_cd,t.status_cd
+        statusCd,t.square_price,t.square_price squarePrice,t.is_default,t.is_default isDefault,t.config_id,t.config_id
+        configId,t.fee_flag,t.fee_flag feeFlag,t.fee_name,t.fee_name feeName,t.start_time,t.start_time
+        startTime,t.end_time,t.end_time endTime,t.community_id,t.community_id communityId,t.b_id,t.b_id bId,
+        td1.name feeTypeCdName,td2.name feeFlagName,t.bill_type billType,t.bill_type,td3.name billTypeName,
+        t.payment_cd,t.payment_cycle,t.payment_cd paymentCd,t.payment_cycle paymentCycle,
+        t.computing_formula_text,t.computing_formula_text computingFormulaText,t.deduct_from,t.deduct_from
+        deductFrom,td4.name computingFormulaName,t.pay_online payOnline,t.scale,t.decimal_place decimalPlace,t.units
+        from pay_fee_config t
+        left join t_dict td1 on t.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td2 on t.fee_flag = td2.status_cd and td2.table_name = 'pay_fee_config' and td2.table_columns =
+        'fee_flag'
+        left join t_dict td3 on t.bill_type = td3.status_cd and td3.table_name = 'pay_fee_config' and td3.table_columns
+        = 'bill_type'
+        left join t_dict td4 on t.computing_formula = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'computing_formula'
+        where 1 = 1
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="computingFormula !=null and computingFormula != ''">
+            and t.computing_formula= #{computingFormula}
+        </if>
+        <if test="additionalAmount !=null and additionalAmount != ''">
+            and t.additional_amount= #{additionalAmount}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="squarePrice !=null and squarePrice != ''">
+            and t.square_price= #{squarePrice}
+        </if>
+        <if test="isDefault !=null and isDefault != ''">
+            and t.is_default= #{isDefault}
+        </if>
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="feeName !=null and feeName != ''">
+            and t.fee_name like '%${feeName}%'
+        </if>
+        <if test="feeNameEq !=null and feeNameEq != ''">
+            and t.fee_name = #{feeNameEq}
+        </if>
+        <if test="startTime !=null ">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="valid !=null and valid == 1">
+            and t.end_time &gt; now()
+        </if>
+        <if test="curTime !=null ">
+            and t.end_time &gt; #{curTime}
+            and t.start_time &lt; #{curTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="paymentCd !=null and paymentCd != ''">
+            and t.payment_cd= #{paymentCd}
+        </if>
+        <if test="paymentCycle !=null and paymentCycle != ''">
+            and t.payment_cycle= #{paymentCycle}
+        </if>
+        <if test="billType !=null and billType != ''">
+            and t.bill_type= #{billType}
+        </if>
+        <if test="deductFrom !=null and deductFrom != ''">
+            and t.deduct_from = #{deductFrom}
+        </if>
+        order by t.create_time desc
+        <if test="page != -1 and page != null ">
+            limit #{page}, #{row}
+        </if>
+    </select>
+
+    <!-- 修改费用配置信息 add by wuxw 2018-07-03 -->
+    <update id="updateFeeConfigInfoInstance" parameterType="Map">
+        update pay_fee_config t set t.status_cd = #{statusCd}
+        <if test="newBId != null and newBId != ''">
+            ,t.b_id = #{newBId}
+        </if>
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            , t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="computingFormula !=null and computingFormula != ''">
+            , t.computing_formula= #{computingFormula}
+        </if>
+        <if test="computingFormulaText !=null and computingFormulaText != ''">
+            , t.computing_formula_text= #{computingFormulaText}
+        </if>
+        <if test="additionalAmount !=null and additionalAmount != '' or additionalAmount == 0">
+            , t.additional_amount= #{additionalAmount}
+        </if>
+        <if test="squarePrice !=null and squarePrice != '' or squarePrice == 0">
+            , t.square_price= #{squarePrice}
+        </if>
+        <if test="paymentCd !=null and paymentCd != ''">
+            , t.payment_cd= #{paymentCd}
+        </if>
+        <if test="paymentCycle !=null and paymentCycle != ''">
+            , t.payment_cycle= #{paymentCycle}
+        </if>
+        <if test="isDefault !=null and isDefault != ''">
+            , t.is_default= #{isDefault}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            , t.fee_flag= #{feeFlag}
+        </if>
+        <if test="feeName !=null and feeName != ''">
+            , t.fee_name= #{feeName}
+        </if>
+        <if test="billType !=null and billType != ''">
+            , t.bill_type= #{billType}
+        </if>
+        <if test="startTime !=null ">
+            , t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null ">
+            , t.end_time= #{endTime}
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            , t.community_id= #{communityId}
+        </if>
+        <if test="deductFrom !=null and deductFrom != ''">
+            , t.deduct_from= #{deductFrom}
+        </if>
+        where 1=1
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+    </update>
+
+    <!-- 查询费用配置数量 add by wuxw 2018-07-03 -->
+    <select id="queryFeeConfigsCount" parameterType="Map" resultType="Map">
+        select count(1) count
+        from pay_fee_config t
+        left join t_dict td1 on t.fee_type_cd = td1.status_cd and td1.table_name = 'pay_fee_config' and
+        td1.table_columns = 'fee_type_cd'
+        left join t_dict td2 on t.fee_flag = td2.status_cd and td2.table_name = 'pay_fee_config' and td2.table_columns =
+        'fee_flag'
+        left join t_dict td3 on t.bill_type = td3.status_cd and td3.table_name = 'pay_fee_config' and td3.table_columns
+        = 'bill_type'
+        left join t_dict td4 on t.computing_formula = td4.status_cd and td4.table_name = 'pay_fee_config' and
+        td4.table_columns = 'computing_formula'
+        where 1 = 1
+        <if test="feeTypeCd !=null and feeTypeCd != ''">
+            and t.fee_type_cd= #{feeTypeCd}
+        </if>
+        <if test="computingFormula !=null and computingFormula != ''">
+            and t.computing_formula= #{computingFormula}
+        </if>
+        <if test="additionalAmount !=null and additionalAmount != ''">
+            and t.additional_amount= #{additionalAmount}
+        </if>
+        <if test="statusCd !=null and statusCd != ''">
+            and t.status_cd= #{statusCd}
+        </if>
+        <if test="squarePrice !=null and squarePrice != ''">
+            and t.square_price= #{squarePrice}
+        </if>
+        <if test="isDefault !=null and isDefault != ''">
+            and t.is_default= #{isDefault}
+        </if>
+        <if test="configId !=null and configId != ''">
+            and t.config_id= #{configId}
+        </if>
+        <if test="feeFlag !=null and feeFlag != ''">
+            and t.fee_flag= #{feeFlag}
+        </if>
+        <if test="feeName !=null and feeName != ''">
+            and t.fee_name like '%${feeName}%'
+        </if>
+        <if test="startTime !=null ">
+            and t.start_time= #{startTime}
+        </if>
+        <if test="endTime !=null ">
+            and t.end_time= #{endTime}
+        </if>
+        <if test="valid !=null and valid == 1">
+            and t.end_time &gt; now()
+        </if>
+        <if test="communityId !=null and communityId != ''">
+            and t.community_id= #{communityId}
+        </if>
+        <if test="bId !=null and bId != ''">
+            and t.b_id= #{bId}
+        </if>
+        <if test="paymentCd !=null and paymentCd != ''">
+            and t.payment_cd= #{paymentCd}
+        </if>
+        <if test="paymentCycle !=null and paymentCycle != ''">
+            and t.payment_cycle= #{paymentCycle}
+        </if>
+        <if test="billType !=null and billType != ''">
+            and t.bill_type= #{billType}
+        </if>
+        <if test="deductFrom !=null and deductFrom != ''">
+            and t.deduct_from = #{deductFrom}
+        </if>
+    </select>
+
+    <!-- 保存费用配置信息 add by wuxw 2018-07-03 -->
+    <insert id="saveFeeConfig" parameterType="Map">
+        insert into pay_fee_config(fee_type_cd, computing_formula, additional_amount, status_cd, square_price,
+                                   is_default, config_id, fee_flag, fee_name,
+                                   start_time, end_time, community_id, b_id, bill_type, payment_cd, payment_cycle,
+                                   computing_formula_text, deduct_from,pay_online,scale,decimal_place,units)
+        values (#{feeTypeCd}, #{computingFormula}, #{additionalAmount}, '0', #{squarePrice}, #{isDefault}, #{configId},
+                #{feeFlag}, #{feeName}, #{startTime}, #{endTime}, #{communityId}, '-1', #{billType}, #{paymentCd},
+                #{paymentCycle}, #{computingFormulaText}, #{deductFrom}, #{payOnline},#{scale},#{decimalPlace},#{units})
+    </insert>
+</mapper>
