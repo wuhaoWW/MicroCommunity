@@ -8,7 +8,7 @@ jedis:
     host: dev.redis.java110.com
     port: 6379
     timeout: 3000
-    password: hc
+    password: hc12345678
 
 server:
   port: 8008
@@ -41,7 +41,7 @@ spring:
     database: 0
     host: dev.redis.java110.com
     port: 6379
-    password: hc
+    password: hc12345678
     pool:
       max-active: 300
       max-wait: 3000
