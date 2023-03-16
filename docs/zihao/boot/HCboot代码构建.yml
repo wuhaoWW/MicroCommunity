@@ -1,9 +1,9 @@
 version: "1.0"
 job:
     job_name: HCboot代码构建
-    git_url: https://gitee.com/wuxw7/MicroCommunity.git
-    git_passwd: 无
-    git_username: 无
+    git_url: https://github.com/wuhaoWW/MicroCommunity.git
+    git_passwd: 1234wuhaoW
+    git_username: wuhaoWW
     work_dir: /home/hc/boot
     job_shell: |-
         mv java110-interface/src/main/resources/xx.xml java110-interface/src/main/resources/logback.xml
